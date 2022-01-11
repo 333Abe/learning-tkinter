@@ -2,80 +2,137 @@
 from tkinter import *
 
 def buttonPress(number):
+    global mode
+    global num1
+    if mode == "clear":
+        entrybox.delete(0, END)
+    mode = "entry"
     boxContents = entrybox.get()
     entrybox.delete(0, END)
     entrybox.insert(0, str(boxContents) + str(number))
 
-def clearScreen():
-    global total
-    total = 0
-    entrybox.delete(0, END)
-    
-def add():
-    global total
+def clear():
+    global operator
+    global num1
+    global num2
     global mode
-    mode = "add"
-    num1 = int(total)
-    num2 = int(entrybox.get())
-    total = num1 + num2
+    operator = None
+    num1 = None
+    num2 = None
+    mode = "entry"
     entrybox.delete(0, END)
+
+def add():
+    global num1
+    global num2
+    global operator
+    num1 = num1 + num2
+    num2 = None
+    entrybox.delete(0, END)
+    entrybox.insert(0, num1)
+    num1 = None
+    operator = None
     return
 
 def minus():
-    global total
-    global mode
-    mode = "minus"
-    num1 = int(total)
-    num2 = int(entrybox.get())
-    total = num1 - num2
+    global num1
+    global num2
+    global operator
+    num1 = num1 - num2
+    num2 = None
     entrybox.delete(0, END)
+    entrybox.insert(0, num1)
+    num1 = None
+    operator = None
+    return
+    
+def multiply():
+    global num1
+    global num2
+    global operator
+    num1 = num1 * num2
+    num2 = None
+    entrybox.delete(0, END)
+    entrybox.insert(0, num1)
+    num1 = None
+    operator = None
     return
 
-def multiply():
-    global total
-    global mode
-    if mode == None:
-        mode = "multiply"
-        total = int(entrybox.get())
-    else:
-        num1 = int(total)
-        num2 = int(entrybox.get())
-        total = num1 * num2
-    entrybox.delete(0, END)
-    return
-    
 def divide():
-    global total
-    global mode
-    if mode == None:
-        mode = "divide"
-        total = int(entrybox.get())
-    else:
-        num1 = int(total)
-        num2 = int(entrybox.get())
-        total = num1 * num2
+    global num1
+    global num2
+    global operator
+    num1 = num1 / num2
+    num2 = None
     entrybox.delete(0, END)
+    entrybox.insert(0, num1)
+    num1 = None
+    operator = None
     return
-    
-def equals():
-    global total
+
+def buttonOperator(symbol):
+    global num1
+    global num2
+    global operator
     global mode
-    if mode == "add":
+    if operator == "+":
+        num2 = float(entrybox.get())
         add()
-    elif mode =="minus":
+    if operator == "-":
+        num2 = float(entrybox.get())
         minus()
-    elif mode =="multiply":
+    if operator == "x":
+        num2 = float(entrybox.get())
         multiply()
-    elif mode =="divide":
+    if operator == "/":
+        num2 = float(entrybox.get())
         divide()
-    entrybox.delete(0, END)
-    entrybox.insert(0, total)
-    total = 0
-    mode = None
+    try:
+        mode = "clear"
+        operator = symbol
+        if num1 == None:
+            num1 = float(entrybox.get())
+        else:
+            num2 = float(entrybox.get())
+            if operator == "+":
+                add()
+            elif operator == "-":
+                minus()
+            elif operator == "x":
+                multiply()
+            elif operator == "/":
+                divide()
+    except ValueError:
+        return
+
+def equals():
+    global mode
+    global operator
+    global num1
+    global num2
+    if num1 != None:
+        if operator == "+":
+            num2 = float(entrybox.get())
+            add()
+        if operator == "-":
+            num2 = float(entrybox.get())
+            minus()
+        if operator == "x":
+            num2 = float(entrybox.get())
+            multiply()
+        if operator == "/":
+            num2 = float(entrybox.get())
+            divide()
+        operator = None
+        num1 = None
+        num2 = None
+        mode = "clear"
 
 root = Tk()
-total = 0
-mode = None
+num1 = None
+num2 = None
+operator = None
+mode = "entry"
 
 root.title("Simple Calculator")
 
@@ -93,12 +150,13 @@ button_7 = Button(root, text = "7", padx = 40, pady = 20, command = lambda: butt
 button_8 = Button(root, text = "8", padx = 40, pady = 20, command = lambda: buttonPress(8))
 button_9 = Button(root, text = "9", padx = 40, pady = 20, command = lambda: buttonPress(9))
 button_0 = Button(root, text = "0", padx = 40, pady = 20, command = lambda: buttonPress(0))
-button_add = Button(root, text = "+", padx = 40, pady = 20, command = add)
-button_minus = Button(root, text = "-", padx = 40, pady = 20, command = minus)
-button_multiply = Button(root, text = "x", padx = 40, pady = 20, command = multiply)
-button_divide = Button(root, text = "/", padx = 40, pady = 20, command = divide)
-button_equals = Button(root, text = "=", padx = 91, pady = 20, command = equals)
-button_clear = Button(root, text = "Clear", padx = 79, pady = 20, command = clearScreen)
+button_point = Button(root, text = ".", padx = 42, pady = 20, command = lambda: buttonPress("."))
+button_add = Button(root, text = "+", padx = 38, pady = 20, command = lambda: buttonOperator("+"))
+button_minus = Button(root, text = "-", padx = 40, pady = 20, command = lambda: buttonOperator("-"))
+button_multiply = Button(root, text = "x", padx = 38, pady = 20, command = lambda: buttonOperator("x"))
+button_divide = Button(root, text = "/", padx = 40, pady = 20, command = lambda: buttonOperator("/"))
+button_equals = Button(root, text = "=", padx = 180, pady = 20, command =equals)
+button_clear = Button(root, text = "Clear", padx = 27, pady = 20, command = clear)
 
 #put buttons on the screen
 button_7.grid(row = 2, column = 0)
@@ -117,7 +175,8 @@ button_3.grid(row = 4, column = 2)
 button_multiply.grid(row = 4, column = 3)
 
 button_0.grid(row = 5, column = 0)
-button_clear.grid(row = 5, column = 1, columnspan = 2)
+button_point.grid(row = 5, column = 1)
+button_clear.grid(row = 5, column = 2, columnspan = 1)
 button_divide.grid(row = 5, column = 3)
 
 #bottom row
