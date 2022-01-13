@@ -1,0 +1,58 @@
+#photo viewer app
+from tkinter import *
+from PIL import ImageTk, Image
+import os
+root = Tk()
+root.title("tkinter image viewer")
+path="/home/pi/mu_code/tkinter/images" #change this to where the images are stored
+images = os.listdir(path)  #creates a list of image file names
+image_list=[]
+#creates a list containing copies of the actual images... i think...
+for i in range(len(images)):
+    image_list.append(ImageTk.PhotoImage(Image.open(path+"/"+images[i])))
+
+image_num=0
+myLabel = Label(image=image_list[image_num])
+myLabel.grid(row=0, column=0, columnspan=3)
+
+def forward():
+    global image_num
+    global myLabel
+    image_num += 1
+    myLabel.grid_forget()
+    myLabel = Label(image=image_list[image_num])
+    myLabel.grid(row=0, column=0, columnspan=3)
+    #the following code disables the forward button when we get to the last image in the list, 
+    #and also re-enables the back button if it was disabled
+    if len(image_list)-1 == image_num:
+        button_forward = Button(root, text=">>", command=forward, state = DISABLED)
+        button_forward.grid(row=2, column=2)
+    else:
+        button_back = Button(root, text="<<", command=back)
+        button_back.grid(row=2, column=0)  
+
+def back():
+    global image_num
+    global myLabel
+    image_num -= 1
+    myLabel.grid_forget()
+    myLabel = Label(image=image_list[image_num])
+    myLabel.grid(row=0, column=0, columnspan=3)
+    #the following code disables the back button when we get to the last image in the list, 
+    #and also re-enables the forward button if it was disabled
+    if image_num == 0: #if at first photo, the back button needs to be disabled
+        button_back = Button(root, text="<<", command=back, state = DISABLED)
+        button_back.grid(row=2, column=0)
+    else:
+        button_forward = Button(root, text=">>", command=forward)
+        button_forward.grid(row=2, column=2)
+
+button_back = Button(root, text="<<", command=back, state = DISABLED) #starts at first picture so needs to be disabled
+button_exit = Button(root, text="Exit", command=root.destroy)
+button_forward = Button(root, text=">>", command=forward)
+
+button_back.grid(row=2, column=0)
+button_exit.grid(row=2, column=1)
+button_forward.grid(row=2, column=2)
+
+root.mainloop()
